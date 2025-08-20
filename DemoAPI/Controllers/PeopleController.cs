@@ -1,4 +1,5 @@
-﻿using DemoAPI.DemoAPI.Models;
+﻿using DataAccess.Interfaces;
+using DemoAPI.DemoAPI.Models;
 using Microsoft.AspNetCore.Mvc;
 using ServiceReference;
 
@@ -11,13 +12,12 @@ namespace DemoAPI.Controllers
     [ApiController]
     public class PeopleController : ControllerBase
     {
-        private readonly IPersonData _data;
-
+        private readonly IUnitOfWork _unitOfWork;
         private readonly Func<PersonServiceClient> _clientFactory;
 
-        public PeopleController(IPersonData data, Func<PersonServiceClient> clientFactory)
+        public PeopleController(IUnitOfWork unitOfWork, Func<PersonServiceClient> clientFactory)
         {
-            _data = data;
+            _unitOfWork = unitOfWork;
             _clientFactory = clientFactory;
         }
 
@@ -59,7 +59,7 @@ namespace DemoAPI.Controllers
         {
             try
             {
-                var people = await _data.GetPersons();
+                var people = await _unitOfWork.Persons.GetAllAsync();
                 var names = people.Select(p => p.Firstname).ToList();
                 return Ok(ApiResponse<List<string>>.Succeed(names));
             }
@@ -80,7 +80,7 @@ namespace DemoAPI.Controllers
         {
             try
             {
-                var people = await _data.GetPersons();
+                var people = await _unitOfWork.Persons.GetAllAsync();
                 return Ok(ApiResponse<List<PersonModel>>.Succeed(people.ToList()));
             }
             catch (Exception ex)
@@ -102,7 +102,7 @@ namespace DemoAPI.Controllers
         {
             try
             {
-                var person = await _data.GetPerson(id);
+                var person = await _unitOfWork.Persons.GetByIdAsync(id);
                 if (person == null || person.Id == Guid.Empty)
                     return NotFound(ApiResponse<PersonModel>.Fail("Person not found."));
 
@@ -126,7 +126,7 @@ namespace DemoAPI.Controllers
                 if (person == null)
                     return BadRequest(ApiResponse<string>.Fail("Invalid person object."));
 
-                await _data.InsertPerson(person);
+                await _unitOfWork.Persons.AddAsync(person);
                 return Ok(ApiResponse<string>.Succeed("Person added successfully."));
             }
             catch (Exception ex)
@@ -144,11 +144,11 @@ namespace DemoAPI.Controllers
         {
             try
             {
-                var person = await _data.GetPerson(id);
+                var person = await _unitOfWork.Persons.GetByIdAsync(id);
                 if (person == null)
                     return NotFound(ApiResponse<string>.Fail("Person not found."));
 
-                await _data.DeletePerson(id);
+                await _unitOfWork.Persons.DeleteAsync(id);
                 return Ok(ApiResponse<string>.Succeed("Person deleted successfully."));
             }
             catch (Exception ex)
