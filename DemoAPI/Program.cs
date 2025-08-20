@@ -1,4 +1,6 @@
+using DataAccess;
 using DataAccess.DbAccess;
+using DataAccess.Interfaces;
 using DemoAPI;
 using DemoAPI.Validators;
 using FluentMigrator.Runner;
@@ -28,7 +30,8 @@ builder.Services.AddValidatorsFromAssemblyContaining<PersonValidator>();
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddSingleton<ISqlDataAccess, SqlDataAccess>();
-builder.Services.AddSingleton<IPersonData, PersonData>();
+builder.Services.AddSingleton<IPersonRepository, PersonRepository>();
+builder.Services.AddSingleton<IUnitOfWork, UnitOfWork>();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
@@ -64,6 +67,5 @@ if (app.Environment.IsDevelopment())
 }
 
 app.MapControllers();
-app.ConfigureApi();
 
 app.Run();
