@@ -15,6 +15,10 @@ public class PersonValidator : AbstractValidator<PersonModel>
             .WithMessage("{PropertyName} is required.")
             .Length(2, 50)
             .Must(BeAValidName).WithMessage("{PropertyName} contains invalid characters");
+        RuleFor(p => p.Email)
+            .NotEmpty().WithMessage("{PropertyName} is required.")
+            .EmailAddress().WithMessage("Invalid email format.")
+            .MaximumLength(100).WithMessage("{PropertyName} cannot exceed 100 characters.");
     }
 
     protected bool BeAValidName(string name)
