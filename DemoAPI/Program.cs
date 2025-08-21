@@ -13,18 +13,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
-//add a migration for future run
-builder.Services.AddFluentMigratorCore()
-    .ConfigureRunner(rb => rb
-        .AddSqlServer()
-        .WithGlobalConnectionString(
-            builder.Configuration.GetConnectionString("Default"))
-        .ScanIn(typeof(AddEmailToPerson).Assembly).For.Migrations())
-    .AddLogging(lb => lb.AddFluentMigratorConsole());
-
-
 builder.Services.AddControllers();
-
 builder.Services.AddFluentValidationAutoValidation();
 builder.Services.AddValidatorsFromAssemblyContaining<PersonValidator>();
 
@@ -48,8 +37,16 @@ builder.Services.AddScoped<Func<PersonServiceClient>>(_ =>
         "http://localhost:63510/PersonService.svc");
 });
 
-var app = builder.Build();
+//add a migration for future run
+builder.Services.AddFluentMigratorCore()
+    .ConfigureRunner(rb => rb
+        .AddSqlServer()
+        .WithGlobalConnectionString(builder.Configuration.GetConnectionString("Default"))
+        .ScanIn(typeof(CreatePersonTable).Assembly).For.Migrations())
+    .AddLogging(lb => lb.AddFluentMigratorConsole());
 
+var app = builder.Build();
+/*
 //run the migration
 using (var scope = app.Services.CreateScope())
 {
@@ -57,7 +54,7 @@ using (var scope = app.Services.CreateScope())
     runner.MigrateUp(); //applies Up method to DB
     //runner.MigrateDown(-migrationId-); //rollsback all migrations till the -migrationId- inclusive
     //runner.Rollback(1); // rollback 1 stetp of migrations
-}
+}*/
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

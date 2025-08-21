@@ -21,7 +21,7 @@ public class PersonRepository : IPersonRepository
     }
 
     public Task AddAsync(PersonModel entity) =>
-        _db.SaveData("dbo.spPerson_Insert", entity);
+        _db.SaveData("dbo.spPerson_Insert", new { FirstName = entity.Firstname, Lastname = entity.Lastname, Email = entity.Email});
 
     public Task UpdateAsync(PersonModel entity) =>
         _db.SaveData("dbo.spPerson_Update", entity);

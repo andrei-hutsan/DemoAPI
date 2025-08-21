@@ -57,16 +57,16 @@
   <ItemGroup>
     <Folder Include="Properties" />
     <Folder Include="dbo" />
-    <Folder Include="dbo\Tables" />
     <Folder Include="dbo\StoredProcedures" />
+    <Folder Include="dbo\Tables" />
   </ItemGroup>
   <ItemGroup>
-    <Build Include="dbo\Tables\Person.sql" />
     <Build Include="dbo\StoredProcedures\spPerson_GetAll.sql" />
     <Build Include="dbo\StoredProcedures\spPerson_Get.sql" />
     <Build Include="dbo\StoredProcedures\spPerson_Delete.sql" />
     <Build Include="dbo\StoredProcedures\spPerson_Insert.sql" />
     <Build Include="dbo\StoredProcedures\spPerson_Update.sql" />
+    <Build Include="dbo\Tables\Person.sql" />
   </ItemGroup>
   <ItemGroup>
     <PostDeploy Include="Script.PostDeployment.sql" />
