@@ -1,4 +1,5 @@
-﻿using DataAccess.Interfaces;
+﻿using DataAccess.DTO;
+using DataAccess.Interfaces;
 using DataAccess.Models;
 
 namespace DataAccess.Data;
@@ -29,4 +30,13 @@ public class PersonRepository : IPersonRepository
 
     public Task DeleteAsync(Guid id) =>
         _db.SaveData("dbo.spPerson_Delete", new { Id = id });
+
+    public Task<IEnumerable<PersonWithDepDto>> GetAllDeatilsAsync()
+        =>_db.LoadData<PersonWithDepDto, dynamic>("dbo.spPerson_GetAllWithDepartment", new { });
+
+    public async Task<PersonWithDepDto?> GetDetailsByIdAsync(Guid id)
+    {
+        var result = await _db.LoadData<PersonWithDepDto, dynamic>("dbo.spPerson_GetWithDepartment", new {Id = id});
+        return result.FirstOrDefault();
+    }
 }
