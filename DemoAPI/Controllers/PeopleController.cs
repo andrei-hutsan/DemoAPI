@@ -1,4 +1,5 @@
-﻿using DataAccess.Interfaces;
+﻿using DataAccess.DTO;
+using DataAccess.Interfaces;
 using DemoAPI.DemoAPI.Models;
 using Microsoft.AspNetCore.Mvc;
 using ServiceReference;
@@ -19,6 +20,50 @@ namespace DemoAPI.Controllers
         {
             _unitOfWork = unitOfWork;
             _clientFactory = clientFactory;
+        }
+
+        /// <summary>
+        /// Returns people with department details
+        /// </summary>
+        /// <returns>List of people</returns>
+        [HttpGet]
+        public async Task<IActionResult> GetPeopleDetails()
+        {
+            try
+            {
+                var people = await _unitOfWork.Persons.GetAllDeatilsAsync();
+                return Ok(ApiResponse<List<PersonWithDepDto>>.Succeed(people.ToList()));
+            }catch(Exception ex)
+            {
+                return StatusCode(500, ApiResponse<List<PersonModel>>.Fail(
+                    "An error occurred while fetching people.",
+                    new List<string> { ex.Message }
+                ));
+            }
+        }
+
+        /// <summary>
+        /// Returns person with department details
+        /// </summary>
+        /// <param name="id">Person Id</param>
+        /// <returns>Person</returns>
+        [HttpGet("{id:guid}")]
+        public async Task<IActionResult> GetPersonDetailsById(Guid id)
+        {
+            try
+            {
+                var person = await _unitOfWork.Persons.GetDetailsByIdAsync(id);
+                if (person == null || person.Id == Guid.Empty)
+                    return NotFound(ApiResponse<PersonModel>.Fail("Person not found."));
+
+                return Ok(ApiResponse<PersonWithDepDto>.Succeed(person));
+            }catch(Exception ex)
+            {
+                return StatusCode(500, ApiResponse<List<PersonModel>>.Fail(
+                    "An error occurred while fetching people.",
+                    new List<string> { ex.Message }
+                ));
+            }
         }
 
         /// <summary>
