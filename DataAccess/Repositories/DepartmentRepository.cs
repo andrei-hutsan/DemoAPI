@@ -11,7 +11,7 @@ public class DepartmentRepository : IDepartmentRepository
     }
     public Task AddAsync(DepartmentModel entity)
         => _db.SaveData("dbo.spDepartment_Insert",
-         new { Firstname = entity.Name });
+         new { Name = entity.Name });
 
 
     public Task DeleteAsync(Guid id)
