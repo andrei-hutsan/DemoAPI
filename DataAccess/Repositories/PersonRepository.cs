@@ -1,4 +1,5 @@
-﻿using DataAccess.Interfaces;
+﻿using DataAccess.DTO;
+using DataAccess.Interfaces;
 using DataAccess.Models;
 
 namespace DataAccess.Data;
@@ -20,12 +21,22 @@ public class PersonRepository : IPersonRepository
         return result.FirstOrDefault();
     }
 
-    public Task AddAsync(PersonModel entity) =>
-        _db.SaveData("dbo.spPerson_Insert", new { FirstName = entity.Firstname, Lastname = entity.Lastname, Email = entity.Email});
+    public Task AddAsync(PersonModel entity)
+     => _db.SaveData("dbo.spPerson_Insert",
+         new { Firstname = entity.Firstname, Lastname = entity.Lastname, Email = entity.Email, DepartmentId = entity.DepartmentId });
 
     public Task UpdateAsync(PersonModel entity) =>
         _db.SaveData("dbo.spPerson_Update", entity);
 
     public Task DeleteAsync(Guid id) =>
         _db.SaveData("dbo.spPerson_Delete", new { Id = id });
+
+    public Task<IEnumerable<PersonWithDepDto>> GetAllDeatilsAsync()
+        =>_db.LoadData<PersonWithDepDto, dynamic>("dbo.spPerson_GetAllWithDepartment", new { });
+
+    public async Task<PersonWithDepDto?> GetDetailsByIdAsync(Guid id)
+    {
+        var result = await _db.LoadData<PersonWithDepDto, dynamic>("dbo.spPerson_GetWithDepartment", new {Id = id});
+        return result.FirstOrDefault();
+    }
 }
