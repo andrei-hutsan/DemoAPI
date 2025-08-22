@@ -4,7 +4,7 @@ namespace Migrations.Migrations;
 [Migration(2025082201)]
 public class Add_DepartmentId_To_Person : Migration
 {
-    public override void Down()
+    public override void Up()
     {
         Alter.Table("Person")
             .AddColumn("DepartmentId").AsGuid().Nullable();
@@ -17,7 +17,7 @@ public class Add_DepartmentId_To_Person : Migration
             .OnTable("Person").OnColumn("DepartmentId").Ascending();
     }
 
-    public override void Up()
+    public override void Down()
     {
         Delete.Index("IX_Person_DepartmentId").OnTable("Person");
         Delete.ForeignKey("FK_Person_Department").OnTable("Person");

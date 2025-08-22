@@ -46,17 +46,23 @@ builder.Services.AddFluentMigratorCore()
     .AddLogging(lb => lb.AddFluentMigratorConsole());
 
 var app = builder.Build();
-/*
-//run the migration
-using (var scope = app.Services.CreateScope())
-{
-    var runner = scope.ServiceProvider.GetRequiredService<IMigrationRunner>();
-    runner.MigrateUp(); //applies Up method to DB
-    //runner.MigrateDown(-migrationId-); //rollsback all migrations till the -migrationId- inclusive
-    //runner.Rollback(1); // rollback 1 stetp of migrations
-}*/
 
-// Configure the HTTP request pipeline.
+if (args.Contains("--migrate"))
+{
+    using var scope = app.Services.CreateScope();
+    var runner = scope.ServiceProvider.GetRequiredService<IMigrationRunner>();
+
+    // Optional: list discovered migrations to confirm assembly scanning
+    var discovered = runner.MigrationLoader.LoadMigrations();
+    Console.WriteLine($"Found {discovered.Count} migrations:");
+    foreach (var m in discovered)
+        Console.WriteLine($"  {m.Key} -> {m.Value.Migration.GetType().FullName}");
+
+    runner.MigrateUp();
+    Console.WriteLine("Migration completed.");
+    return;
+}
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();

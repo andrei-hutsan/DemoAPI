@@ -4,7 +4,7 @@ namespace Migrations.Migrations;
 [Migration(2025082200)]
 public class Create_Department : Migration
 {
-    public override void Down()
+    public override void Up()
     {
         Create.Table("Department")
             .WithColumn("Id").AsGuid().NotNullable().PrimaryKey()
@@ -16,7 +16,7 @@ public class Create_Department : Migration
             .WithOptions().Unique();
     }
 
-    public override void Up()
+    public override void Down()
     {
         Delete.Index("UX_Department_Name").OnTable("Department");
         Delete.Table("Department");

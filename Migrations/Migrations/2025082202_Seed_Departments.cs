@@ -6,18 +6,17 @@ public class Seed_Departments : Migration
 {
     public override void Up()
     {
-        Execute.Sql(@"
-        IF NOT EXISTS (SELECT 1 FROM dbo.Department)
-        BEGIN
-            INSERT dbo.Department (Id, Name)
-            VALUES (NEWSEQUENTIALID(), N'Engineering'),
-                   (NEWSEQUENTIALID(), N'HR'),
-                   (NEWSEQUENTIALID(), N'Finance');
-        END
-        ");
+        Insert.IntoTable("Department")
+            .Row(new { Name = "Engineering" })
+            .Row(new { Name = "HR" })
+            .Row(new { Name = "Finance" });
     }
 
     public override void Down()
     {
+        Delete.FromTable("Department")
+            .Row(new { Name = "Engineering" })
+            .Row(new { Name = "HR" })
+            .Row(new { Name = "Finance" });
     }
 }
