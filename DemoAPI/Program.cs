@@ -14,8 +14,11 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 
 builder.Services.AddControllers();
+
+//Validator
 builder.Services.AddFluentValidationAutoValidation();
 builder.Services.AddValidatorsFromAssemblyContaining<PersonValidator>();
+builder.Services.AddValidatorsFromAssemblyContaining<DepartmentValidator>();
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddSingleton<ISqlDataAccess, SqlDataAccess>();
@@ -38,6 +41,7 @@ builder.Services.AddScoped<Func<PersonServiceClient>>(_ =>
         "http://localhost:63510/PersonService.svc");
 });
 
+//Fluent Migrator
 builder.Services.AddFluentMigratorCore()
     .ConfigureRunner(rb => rb
         .AddSqlServer()
@@ -47,6 +51,7 @@ builder.Services.AddFluentMigratorCore()
 
 var app = builder.Build();
 
+//Migrations
 if (args.Contains("--migrate"))
 {
     using var scope = app.Services.CreateScope();
